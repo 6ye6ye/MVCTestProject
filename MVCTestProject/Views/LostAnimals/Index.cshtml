@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model DomainLayer.ViewModels.LostAnimalListViewModel
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Потерянные животные</h1>
+
+<p>
+    <a asp-action="Create">Создать</a>
+</p>
+
+<form asp-action="Index">
+    <div class="row ">
+        <div>
+            <label>c:</label>
+            <input asp-for="ListFilter.PeriodBegin" class="form-control" id="PeriodBegin" />
+            <span asp-validation-for="ListFilter.PeriodBegin" class="text-danger"></span>
+            <label>по:</label>
+            <input asp-for="ListFilter.PeriodEnd" class="form-control" id="PeriodEnd" />
+            <span asp-validation-for="ListFilter.PeriodEnd" class="text-danger"></span>
+
+            <input type="button" id="button_search" value="Поиск" class="accordion-button" />
+        </div>
+    </div>
+</form>
+<div id="table-container">
+    @await Html.PartialAsync("LostAnimalsListPartial", Model.LostAnimals)
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#button_search').click(function () {
+            var filterData = @Json.Serialize(Model.ListFilter);
+            $.ajax({
+                url: '/LostAnimals/GetAllWithFilter',
+                dataType: "json",
+                type: 'GET',
+                data: filterData,
+
+                success: function (data) {
+                    console.log(data);
+                    var updatedLostAnimals = JSON.parse(JSON.stringify(data));
+                   
+                    console.log('Lost animals updated successfully');
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log('Error:', textStatus, errorThrown);
+                }
+            });
+        });
+    });
+</script>

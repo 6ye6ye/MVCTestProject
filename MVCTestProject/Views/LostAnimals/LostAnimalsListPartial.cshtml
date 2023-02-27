@@ -1,0 +1,52 @@
+﻿@model IEnumerable<LostAnimalDtoGetShort>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.LostDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.District)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AnimalType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AnimalName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Info)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LostDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.District.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AnimalType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AnimalName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Info)
+                </td>
+
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Изменить</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Подробнее</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

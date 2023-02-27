@@ -1,0 +1,16 @@
+﻿global using AnimalFinder.Data;
+global using AutoMapper;
+global using BLL.Repository;
+global using BLL.Services.Account;
+global using DomainLayer.Dtos;
+global using DomainLayer.Enums;
+global using DomainLayer.Filters;
+global using DomainLayer.Models;
+global using DomainLayer.ViewModels;
+global using DomainLayer.ViewModels.Account;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.AspNetCore.Mvc.Rendering;
+global using Microsoft.EntityFrameworkCore;
+global using System.Collections;
+global using System.Linq.Expressions;

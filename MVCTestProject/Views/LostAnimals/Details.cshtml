@@ -1,0 +1,48 @@
+﻿@model DomainLayer.ViewModels.LostAnimalViewModelGetFull
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Подробности</h1>
+
+<div>
+    <h4>Пропавшее животное</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LostAnimal.AnimalType)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LostAnimal.AnimalType)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LostAnimal.AnimalName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LostAnimal.AnimalName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LostAnimal.Info)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LostAnimal.Info)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LostAnimal.Phone)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LostAnimal.Phone)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LostAnimal.LostDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LostAnimal.LostDate)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.LostAnimal.Id">Изменить</a> |
+    <a asp-action="Index">Назад к списку</a>
+</div>
