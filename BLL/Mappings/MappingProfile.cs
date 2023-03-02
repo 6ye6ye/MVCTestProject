@@ -11,6 +11,7 @@ public class MappingProfile : Profile
              .ForMember(dest => dest.LostAnimal, opt => opt.MapFrom(src => src))
              .ReverseMap();
 
+        CreateMap<District, DistrictDtoGet>().ReverseMap();
         CreateMap<District, DistrictViewModel>().ReverseMap();
         CreateMap<User, RegisterViewModel>().ReverseMap();
         CreateMap<User, LoginViewModel>().ReverseMap();

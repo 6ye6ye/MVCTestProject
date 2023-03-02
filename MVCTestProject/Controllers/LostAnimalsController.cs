@@ -14,22 +14,15 @@ public class LostAnimalsController : Controller
     }
 
     // GET: LostAnimals
-    
+    [HttpGet]
     public IActionResult Index()
     {
         var lostAnimals = _repository.GetAll();
         var lostAnimalsDto = _mapper.Map<IEnumerable<LostAnimalDtoGetShort>>(lostAnimals);
 
-        var listFilter = new LostAnimalsFilterParam()
-        {
-            PeriodBegin = DateTime.Now.AddMonths(-1),
-            PeriodEnd = DateTime.Now
-        };
-
         var viewModel = new LostAnimalListViewModel()
         {
             LostAnimals = lostAnimalsDto,
-            ListFilter = listFilter
         };
 
         return View(viewModel);
@@ -91,6 +84,7 @@ public class LostAnimalsController : Controller
         if (ModelState.IsValid)
         {
             lostAnimal.Id = Guid.NewGuid();
+            lostAnimal.AddDate = DateTime.Now;
             _repository.Create(lostAnimal);
             await _unitOfWork.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -194,8 +188,10 @@ public class LostAnimalsController : Controller
     public IActionResult GetAllWithFilter(LostAnimalsFilterParam filter)
     {
         var filterExpresstion = FilterService.GetFilterExpression(filter);
-        var lostAnimals = _repository.GetAll(filterExpresstion);
+        var sortingStruct = FilterService.GetSortingStruct(filter.Sort);
 
-        return Json(lostAnimals);
+        var animals = _repository.GetAll(filterExpresstion, sortingStruct.Expression, sortingStruct.Direction, (int)filter.ItemsCount).AsEnumerable();
+        var lostAnimals = _mapper.Map<IEnumerable<LostAnimalDtoGetShort>>(animals);
+        return PartialView("LostAnimalsListPartial", lostAnimals);
     }
 }

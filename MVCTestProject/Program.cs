@@ -23,9 +23,8 @@ builder.Services.AddIdentity<User, Role>(options =>
     .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddControllersWithViews().AddControllersAsServices();
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork<AppDbContext>>();
-builder.Services.AddTransient<IAccountService, AccountService>();
-builder.Services.AddScoped<DbContext, AppDbContext>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork<AppDbContext>>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

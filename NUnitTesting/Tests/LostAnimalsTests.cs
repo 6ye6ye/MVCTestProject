@@ -3,18 +3,22 @@ using AnimalFinder.Controllers;
 using DomainLayer.Dtos;
 using DomainLayer.Models;
 using DomainLayer.ViewModels;
+using BLL.UnitOfWorks;
+using Moq;
 
 namespace NUnitTesting.Tests
 {
-    public class LostAnimalTesting : BaseEntitiesTest<LostAnimal>
+    public class LostAnimalTesting : BaseEntitiesRepositoryTest<LostAnimal>
     {
+        private protected Mock<IUnitOfWork> unitOfWork;
+
         public override LostAnimal GetTestItem()
         {
             return new LostAnimal()
             {
                 Id = new Guid("AAAAAAAA-1111-1111-1111-111111111111"),
                 AnimalName = "Test",
-                AnimalType = DomainLayer.Enums.AnimalTypeEnum.Кошка,
+                AnimalType = DomainLayer.Enums.AnimalTypeEnum.Cat,
                 LostDate = DateTime.Now,
                 Phone = "0555555",
                 PhotoPath = "",
@@ -27,8 +31,18 @@ namespace NUnitTesting.Tests
         {
             for (int i = 0; i < 10; i++)
             {
-                yield return new LostAnimal { AnimalName = "Test Animal " + i };
+                yield return new LostAnimal {
+                    Id = new Guid("AAAAAAAA-0000-0000-0000-00000000000" + i),
+                    AnimalName = "Test Animal " + i 
+                };
             }
+        }
+
+        [SetUp]
+        public void Setup_UnitOfWork()
+        {
+            unitOfWork = new Mock<IUnitOfWork>();
+            unitOfWork.Setup(x => x.LostAnimals).Returns(repository.Object);
         }
 
         [Test]
@@ -38,11 +52,14 @@ namespace NUnitTesting.Tests
             var result = controller.Index() as ViewResult;
 
             Assert.IsNotNull(result);
-            var model = result.Model as LostAnimalListViewModel;
-
             Assert.IsInstanceOf<ViewResult>(result);
             Assert.IsInstanceOf<LostAnimalListViewModel>(result.Model);
-            Assert.That(model?.LostAnimals.Count(), Is.EqualTo(10));
+
+            var model = result.Model as LostAnimalListViewModel;
+
+            Assert.IsNotNull(model);
+            Assert.IsNotNull(model.LostAnimals);
+            Assert.That(model.LostAnimals.Count(), Is.EqualTo(_defaultItemsList.Count()));
         }
 
         [Test]
@@ -63,17 +80,16 @@ namespace NUnitTesting.Tests
             var controller = new LostAnimalsController(unitOfWork.Object, mapper);
             var expectedLostAnimal = _defaultItemsList[0];
             var viewModel = new LostAnimalViewModelGetFull(mapper.Map<LostAnimalDtoGetFull>(expectedLostAnimal));
-
-
+            
             var taskActionResult = controller.Details(expectedLostAnimal.Id);
             Assert.IsNotNull(taskActionResult);
-
             var viewResult = taskActionResult.Result as ViewResult;
             Assert.IsNotNull(viewResult);
             Assert.IsInstanceOf<LostAnimalViewModelGetFull>(viewResult.Model);
-            Assert.IsNotNull(viewResult.Model);
 
             var actualLostAnimalViewModel = viewResult.Model as LostAnimalViewModelGetFull;
+
+            Assert.IsNotNull(actualLostAnimalViewModel);
             Assert.Multiple(() =>
             {
                 Assert.That(actualLostAnimalViewModel.LostAnimal.Id, Is.EqualTo(viewModel.LostAnimal.Id));
@@ -97,11 +113,6 @@ namespace NUnitTesting.Tests
 
             Assert.IsNotNull(viewResult);
             Assert.That(viewResult.ActionName, Is.EqualTo("Index"));
-        }
-
-        public override void SetupCustom()
-        {
-            unitOfWork.Setup(x => x.LostAnimals).Returns(repository.Object);
         }
     }
 }

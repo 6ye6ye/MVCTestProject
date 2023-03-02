@@ -2,14 +2,15 @@
 
 public class AccountController : Controller
 {
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IRepository<User> _usersRepository;
     private readonly IAccountService _accountService;
     private readonly ILogger<AccountController> _logger;
 
-    public AccountController(AppDbContext dbContextContext, IAccountService accountService, ILogger<AccountController> logger)
+    public AccountController(IUnitOfWork unitOfWork, IAccountService accountService, ILogger<AccountController> logger)
     {
         _logger = logger;
-        _context = dbContextContext;
+        _usersRepository = unitOfWork.Users;
         _accountService = accountService;
     }
 
@@ -55,7 +56,7 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == viewModel.UserName);
+            var user = await _usersRepository.FirstOrDefaultAsync(u => u.UserName == viewModel.UserName);
             if (user == null)
             {
                 await _accountService.Register(viewModel);

@@ -1,6 +1,6 @@
 ﻿namespace DomainLayer.Models;
 
-public class BaseEntity
+public interface IBaseEntity
 {
     public Guid Id { get; set; }
 }

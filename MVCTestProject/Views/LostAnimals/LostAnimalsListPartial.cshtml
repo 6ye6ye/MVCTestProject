@@ -3,19 +3,19 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th class="sortable">
                 @Html.DisplayNameFor(model => model.LostDate)
             </th>
-            <th>
+            <th class="sortable">
                 @Html.DisplayNameFor(model => model.District)
-            </th>
-            <th>
+            </th class="sortable">
+            <th class="sortable">
                 @Html.DisplayNameFor(model => model.AnimalType)
             </th>
-            <th>
+            <th class="sortable">
                 @Html.DisplayNameFor(model => model.AnimalName)
             </th>
-            <th>
+            <th class="sortable">
                 @Html.DisplayNameFor(model => model.Info)
             </th>
             <th></th>
@@ -50,3 +50,30 @@
         }
     </tbody>
 </table>
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {$('.sortable').click(function() {
+    // Get the index of the clicked header
+    const colIndex = $(this).index();
+
+    // Get the table rows as an array
+    const rows = $('tbody tr').get();
+
+    // Sort the rows based on the clicked header's text
+    rows.sort((a, b) => {
+        const aVal = $(a).children(`td:eq(${colIndex})`).text().toLowerCase();
+        const bVal = $(b).children(`td:eq(${colIndex})`).text().toLowerCase();
+        return aVal.localeCompare(bVal);
+    });
+
+    // Remove the existing table rows and re-add them in the sorted order
+    $.each(rows, (i, row) => {
+        $('tbody').append(row);
+    });
+
+})};
+</script>
+}

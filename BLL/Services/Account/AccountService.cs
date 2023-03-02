@@ -7,9 +7,9 @@ public class AccountService : IAccountService
     private readonly AppDbContext _context;
     private readonly IMapper _mapper;
 
-    public AccountService()
-    {
-    }
+    //public AccountService()
+    //{
+    //}
 
     public AccountService(IMapper mapper, UserManager<User> userManager,
         SignInManager<User> signInManager, AppDbContext context)

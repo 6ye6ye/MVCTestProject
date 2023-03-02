@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DomainLayer.ViewModels;
 
-public class DistrictViewModel : DistrictDto
+public class DistrictViewModel : DistrictDtoGet
 {
     [Display(Name = "Наименование")]
     public string Name { get; set; }

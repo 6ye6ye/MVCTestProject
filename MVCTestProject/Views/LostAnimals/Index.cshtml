@@ -1,6 +1,6 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+﻿@using DomainLayer.SortParameters;
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model DomainLayer.ViewModels.LostAnimalListViewModel
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @{
     ViewData["Title"] = "Index";
 }
@@ -8,47 +8,81 @@
 <h1>Потерянные животные</h1>
 
 <p>
-    <a asp-action="Create">Создать</a>
+    <a asp-action="Create">Добавить объявление</a>
 </p>
 
-<form asp-action="Index">
-    <div class="row ">
-        <div>
-            <label>c:</label>
-            <input asp-for="ListFilter.PeriodBegin" class="form-control" id="PeriodBegin" />
-            <span asp-validation-for="ListFilter.PeriodBegin" class="text-danger"></span>
-            <label>по:</label>
-            <input asp-for="ListFilter.PeriodEnd" class="form-control" id="PeriodEnd" />
-            <span asp-validation-for="ListFilter.PeriodEnd" class="text-danger"></span>
-
-            <input type="button" id="button_search" value="Поиск" class="accordion-button" />
+<div id="app">
+    <div class="row text-left mb-5 align-items-end">
+        <div class="col-md-2 mb-3 mb-sm-0">
+            <div>
+                <label>c:</label>
+                <input type="date"
+                       v-model="listFilter.periodBegin"
+                       placeholder="Input date"
+                       class="form-control" />
+                <span asp-validation-for="ListFilter.PeriodBegin" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-2 text-lg-right">
+            <div class="d-inline">
+                <label>по:</label>
+                <input type="date"
+                       v-model="listFilter.periodEnd"
+                       placeholder="Input date"
+                       class="form-control" />
+                <span asp-validation-for="ListFilter.PeriodEnd" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <label>Сортировка:</label>
+            <select v-model="listFilter.sort" asp-items="@Html.GetEnumSelectList<BaseAdSortParameter>()" class="form-control" data-toggle="select" tabindex="-98">
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label>Количество на странице:</label>
+            <select v-model="listFilter.itemsCount" asp-items="@Html.GetEnumSelectList<ItemsCountPerPage>()" class="form-control" data-toggle="select" tabindex="-98">
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button v-on:click="applyFilter" class="btn btn-primary">Поиск</button>
         </div>
     </div>
-</form>
-<div id="table-container">
-    @await Html.PartialAsync("LostAnimalsListPartial", Model.LostAnimals)
+    <div id="table-container">
+        @await Html.PartialAsync("LostAnimalsListPartial", Model.LostAnimals)
+    </div>
 </div>
 
-<script>
-    $(document).ready(function () {
-        $('#button_search').click(function () {
-            var filterData = @Json.Serialize(Model.ListFilter);
-            $.ajax({
-                url: '/LostAnimals/GetAllWithFilter',
-                dataType: "json",
-                type: 'GET',
-                data: filterData,
-
-                success: function (data) {
-                    console.log(data);
-                    var updatedLostAnimals = JSON.parse(JSON.stringify(data));
-                   
-                    console.log('Lost animals updated successfully');
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.log('Error:', textStatus, errorThrown);
+@section Scripts
+    {
+    <script>
+        let app = new Vue({
+            el: '#app',
+            data: {
+                listFilter: {
+                    periodBegin: '',
+                    periodEnd: '',
+                    itemsCount: '',
+                    sort: '',
                 }
-            });
-        });
-    });
-</script>
+            },
+            methods: {
+                applyFilter() {
+                    console.log('Error:', this.listFilter);
+                    $.ajax({
+                        url: '/LostAnimals/GetAllWithFilter',
+                        dataType: "html",
+                        type: 'GET',
+                        data: this.listFilter,
+                        //data: @Html.Raw(Json.Serialize(Model.ListFilter)),
+                        success: function (data) {
+                            $('#table-container').html(data);
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            console.log('Error:', textStatus, errorThrown);
+                        }
+                    });
+                },
+            }
+        })
+    </script>
+}

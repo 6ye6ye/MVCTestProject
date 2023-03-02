@@ -2,7 +2,7 @@ using DomainLayer.Models;
 
 namespace NUnitTesting.Tests
 {
-    public class DistrictTests : BaseEntitiesTest<District>
+    public class DistrictTests : BaseEntitiesRepositoryTest<District>
     {
         public override District GetTestItem()
         {

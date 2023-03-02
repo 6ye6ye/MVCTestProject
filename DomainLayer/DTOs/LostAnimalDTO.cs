@@ -25,7 +25,7 @@ namespace DomainLayer.Dtos
         public string? Info { get; set; }
 
         [Display(Name = "Район")]
-        public District District { get; set; }
+        public DistrictDtoGet District { get; set; }
 
         [Display(Name = "Дата потери")]
         [DataType(DataType.Date)]

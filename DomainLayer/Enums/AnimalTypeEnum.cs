@@ -1,8 +1,13 @@
-﻿namespace DomainLayer.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
+namespace DomainLayer.Enums;
 
 public enum AnimalTypeEnum
 {
-    Кошка,
-    Собака,
-    Птица
+    [Display(Name = "Кошка")]
+    Cat,
+    [Display(Name = "Собака")]
+    Dog,
+    [Display(Name = "Птица")]
+    Bird
 }

@@ -1,7 +1,10 @@
-﻿namespace BLL.Repository;
+﻿using System.ComponentModel;
+using System.Linq;
+
+namespace BLL.Repository;
 
 public abstract class BaseRepository<TEntity, TContext> : IRepository<TEntity>
-    where TEntity : BaseEntity
+    where TEntity : class, IBaseEntity
     where TContext : DbContext
 {
     private readonly TContext _context;
@@ -21,6 +24,35 @@ public abstract class BaseRepository<TEntity, TContext> : IRepository<TEntity>
     public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> filterExpression)
     {
         return entities.Where(filterExpression);
+    }
+
+    public virtual IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>>? filterExpression,
+        Expression<Func<TEntity, object>> sortExpression, ListSortDirection sortDirection, int count)
+    {
+        return ApplyFilterSortAndLimit(entities, filterExpression, sortExpression, sortDirection, count);
+    }
+
+    private protected IQueryable<TEntity> ApplyFilterSortAndLimit(IQueryable<TEntity> entitiesList, Expression<Func<TEntity, bool>>? filterExpression,
+    Expression<Func<TEntity, object>> sortExpression, ListSortDirection sortDirection, int count)
+    {
+        if (filterExpression != null)
+            entitiesList = entitiesList.Where(filterExpression);
+
+        switch (sortDirection)
+        {
+            case ListSortDirection.Ascending:
+                entitiesList = entitiesList.OrderBy(sortExpression);
+                break;
+            case ListSortDirection.Descending:
+                entitiesList = entitiesList.OrderByDescending(sortExpression);
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+
+        entitiesList = entitiesList.Take(count);
+
+        return entitiesList;
     }
 
     public TEntity? GetById(Guid id)

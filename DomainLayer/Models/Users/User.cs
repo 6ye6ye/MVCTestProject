@@ -3,6 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DomainLayer.Models;
 
-public class User : IdentityUser<Guid>
+public class User : IdentityUser<Guid>, IBaseEntity
 {
 }

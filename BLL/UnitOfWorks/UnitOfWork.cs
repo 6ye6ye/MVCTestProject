@@ -10,6 +10,7 @@ public class UnitOfWork <TContext>: IUnitOfWork, IDisposable
 
     private IRepository<LostAnimal> lostAnimalRepository;
     private IRepository<District> districtsRepository;
+    private IRepository<User> usersRepository;
 
     public UnitOfWork(TContext context) 
     {
@@ -36,6 +37,16 @@ public class UnitOfWork <TContext>: IUnitOfWork, IDisposable
         }
     }
 
+    public IRepository<User> Users
+    {
+        get
+        {
+            if (usersRepository == null)
+                usersRepository = new UsersRepository<TContext>(_context);
+            return usersRepository;
+        }
+    }
+
     public int SaveChanges()
     {
         return _context.SaveChanges();
@@ -46,7 +57,7 @@ public class UnitOfWork <TContext>: IUnitOfWork, IDisposable
         return await _context.SaveChangesAsync();
     }
 
-    public IRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity, new()
+    public IRepository<TEntity> Repository<TEntity>() where TEntity : class, IBaseEntity, new()
     {
         if (_repositories == null) _repositories = new Hashtable();
 
