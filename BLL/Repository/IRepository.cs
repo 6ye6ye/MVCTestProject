@@ -5,7 +5,8 @@ namespace BLL.Repository;
 public interface IRepository<TEntity> where TEntity : class, IBaseEntity
 {
     IEnumerable<TEntity> GetAll();
-    IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> filterExpression);
+    IEnumerable<TEntity> GetAll(int count);
+    IEnumerable<TEntity> GetAll(Expression<Func<TEntity, object>> sortExpression, ListSortDirection sortDirection, int count);
     IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>>? filterExpression,
         Expression<Func<TEntity, object>> sortExpression, ListSortDirection sortDirection, int count);
 

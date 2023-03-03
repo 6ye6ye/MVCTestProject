@@ -44,11 +44,11 @@ public static class FilterService
                 direction = ListSortDirection.Ascending;
                 break;
             case BaseAdSortParameter.DateAddNew: 
-                sortExpression = animal => animal.AddDate;
+                sortExpression = animal => animal.CreateDate;
                 direction = ListSortDirection.Descending;
                 break;
             case BaseAdSortParameter.DateAddOld: 
-                sortExpression = animal => animal.AddDate;
+                sortExpression = animal => animal.CreateDate;
                 direction = ListSortDirection.Ascending;
                 break;
             default: throw new NotImplementedException();

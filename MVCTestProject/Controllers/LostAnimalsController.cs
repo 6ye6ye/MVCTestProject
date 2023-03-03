@@ -1,5 +1,10 @@
-﻿namespace AnimalFinder.Controllers;
+﻿using Microsoft.AspNet.Identity;
+using System.Collections.Generic;
+using System.ComponentModel;
 
+namespace AnimalFinder.Controllers;
+
+[AllowAnonymous]
 public class LostAnimalsController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -14,11 +19,18 @@ public class LostAnimalsController : Controller
     }
 
     // GET: LostAnimals
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult Index()
     {
-        var lostAnimals = _repository.GetAll();
-        var lostAnimalsDto = _mapper.Map<IEnumerable<LostAnimalDtoGetShort>>(lostAnimals);
+        var lostAnimals = _repository.GetAll(null, c => c.CreateDate,
+            ListSortDirection.Descending,
+            (int)ItemsCountPerPage.Twenty)
+            .AsEnumerable();
+
+        var lostAnimalsDto = lostAnimals.Count() != 0 ? 
+            _mapper.Map<IEnumerable<LostAnimalDtoGetShort>>(lostAnimals):
+            null;
 
         var viewModel = new LostAnimalListViewModel()
         {
@@ -28,20 +40,8 @@ public class LostAnimalsController : Controller
         return View(viewModel);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Index(LostAnimalListViewModel viewModel)
-    {
-        var filterExpresstion = FilterService.GetFilterExpression(viewModel.ListFilter);
-        var lostAnimals = _repository.GetAll(filterExpresstion);
-        var lostAnimalsDto = _mapper.Map<IEnumerable<LostAnimalDtoGetShort>>(lostAnimals);
-
-        viewModel.LostAnimals = lostAnimalsDto;
-
-        return View(viewModel);
-    }
-
     // GET: LostAnimals/Details/5
+    [AllowAnonymous]
     public async Task<IActionResult> Details(Guid id)
     {
         if (id == null)
@@ -60,13 +60,12 @@ public class LostAnimalsController : Controller
     }
 
     // GET: LostAnimals/Create
+    [Authorize]
     public ActionResult Create()
     {
         var districtList = _unitOfWork.Districts.GetAll();
-        var animalTypes = EnumToSelectListConverter.GetEnumSelectList<AnimalTypeEnum>();
         var viewModel = new LostAnimalViewModelAdd()
         {
-            AnimalTypeList = new SelectList(animalTypes, "Value", "Text"),
             DistrictList = new SelectList(districtList, "Id", "Name")
         };
 
@@ -78,13 +77,16 @@ public class LostAnimalsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize]
     public async Task<IActionResult> Create(LostAnimalViewModelAdd lostAnimalViewModel)
     {
         var lostAnimal = _mapper.Map<LostAnimal>(lostAnimalViewModel.LostAnimal);
         if (ModelState.IsValid)
         {
             lostAnimal.Id = Guid.NewGuid();
-            lostAnimal.AddDate = DateTime.Now;
+            lostAnimal.CreateDate = DateTime.Now;
+            lostAnimal.CreatorId = new Guid(User.Identity.GetUserId());
+
             _repository.Create(lostAnimal);
             await _unitOfWork.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -94,6 +96,7 @@ public class LostAnimalsController : Controller
     }
 
     // GET: LostAnimals/Edit/5
+    [Authorize]
     public async Task<IActionResult> Edit(Guid? id)
     {
         if (id == null) return NotFound();
@@ -102,11 +105,9 @@ public class LostAnimalsController : Controller
         if (lostAnimal == null) return NotFound();
 
         var districtList = _unitOfWork.Districts.GetAll();
-        var animalTypes = EnumToSelectListConverter.GetEnumSelectList<AnimalTypeEnum>();
-
+ 
         var viewModel = new LostAnimalViewModelAdd()
         {
-            AnimalTypeList = new SelectList(animalTypes, "Value", "Text"),
             DistrictList = new SelectList(districtList, "Id", "Name"),
             LostAnimal = _mapper.Map<LostAnimalDtoAdd>(lostAnimal)
         };
@@ -119,6 +120,7 @@ public class LostAnimalsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize]
     public async Task<IActionResult> Edit(Guid id, LostAnimalViewModelAdd lostAnimalViewModel)
     {
         if (id != lostAnimalViewModel.LostAnimal.Id)
@@ -154,6 +156,7 @@ public class LostAnimalsController : Controller
 
 
     // GET: LostAnimals/Delete/5
+    [Authorize]
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null) return NotFound();
@@ -167,6 +170,7 @@ public class LostAnimalsController : Controller
     // POST: LostAnimals/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
         var lostAnimal = _repository.GetById(id);
@@ -185,6 +189,7 @@ public class LostAnimalsController : Controller
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public IActionResult GetAllWithFilter(LostAnimalsFilterParam filter)
     {
         var filterExpresstion = FilterService.GetFilterExpression(filter);

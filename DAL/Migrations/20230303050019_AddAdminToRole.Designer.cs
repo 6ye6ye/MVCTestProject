@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230302041812_AddToLostAnimalsAddDate")]
-    partial class AddToLostAnimalsAddDate
+    [Migration("20230303050019_AddAdminToRole")]
+    partial class AddAdminToRole
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -148,6 +148,24 @@ namespace DAL.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("9a9f44bc-e5cc-4a80-8753-5762948342ab"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "0532dccf-bda7-4eb1-8314-d62970d261ba",
+                            Email = "admin@gmail.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "admin@gmail.com",
+                            NormalizedUserName = "admin",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGPrM0+a2DPLt2IDXeNXCxwz6N4b+aTzO0qbm2ijrTLm0wZMouCaC+8Oan/u3yF+ZQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "7cc15a76-40da-4574-ba60-ab71d3417b6c",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("DomainLayer.Models.Users.Role", b =>
@@ -180,14 +198,14 @@ namespace DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("fc897c50-9cc2-4ba9-839d-1e71b669902a"),
-                            ConcurrencyStamp = "b069f4ed-dd57-4046-8baf-195f5bc0d88a",
+                            Id = new Guid("ab0f2c94-3895-4670-96f1-ad4d1659f388"),
+                            ConcurrencyStamp = "1c321587-9d70-4df3-8538-caf6ebd2e705",
                             Name = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("01d8ccae-4a62-4870-82a9-5a5564ddc250"),
-                            ConcurrencyStamp = "864634b5-dcd7-43c0-bce1-f9f4074ecc19",
+                            Id = new Guid("bd40a05a-779d-41d9-991a-dd31b5a661f5"),
+                            ConcurrencyStamp = "b477acde-8f3d-440f-958b-b226eec9dd68",
                             Name = "User"
                         });
                 });
@@ -274,6 +292,13 @@ namespace DAL.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("9a9f44bc-e5cc-4a80-8753-5762948342ab"),
+                            RoleId = new Guid("ab0f2c94-3895-4670-96f1-ad4d1659f388")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>

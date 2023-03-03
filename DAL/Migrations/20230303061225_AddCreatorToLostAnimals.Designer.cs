@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230216115830_AddAdminUserRoles")]
-    partial class AddAdminUserRoles
+    [Migration("20230303061225_AddCreatorToLostAnimals")]
+    partial class AddCreatorToLostAnimals
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,6 +57,12 @@ namespace DAL.Migrations
                     b.Property<int>("AnimalType")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("DistrictId")
                         .HasColumnType("uniqueidentifier");
 
@@ -75,6 +81,8 @@ namespace DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
 
                     b.HasIndex("DistrictId");
 
@@ -145,6 +153,24 @@ namespace DAL.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("ae8e68b6-162d-41a8-abb6-6f93dc7be00f"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "692b22de-b981-4930-8efa-b070c7fb9ca3",
+                            Email = "admin@gmail.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "admin@gmail.com",
+                            NormalizedUserName = "admin",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGPrM0+a2DPLt2IDXeNXCxwz6N4b+aTzO0qbm2ijrTLm0wZMouCaC+8Oan/u3yF+ZQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "e4936947-63bd-422e-b3b5-3672e07c7062",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("DomainLayer.Models.Users.Role", b =>
@@ -177,14 +203,14 @@ namespace DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("778e2c7a-a69b-4498-a480-f9dc87f8aad4"),
-                            ConcurrencyStamp = "66adfbf3-7d6f-4af6-9383-bc3d12207c22",
+                            Id = new Guid("6b0073bf-5458-4c4e-8098-5794241214b0"),
+                            ConcurrencyStamp = "806b9e66-5507-4964-b2b5-2fef0a72a5d0",
                             Name = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("6491666e-6e5a-4f18-84dc-1625e30305f6"),
-                            ConcurrencyStamp = "93651ce9-c68f-433d-8d9b-8ecba6edae61",
+                            Id = new Guid("e1ed72ea-c576-47c6-bf1b-e0ba99a0178a"),
+                            ConcurrencyStamp = "1b88e933-7695-4e24-9392-37aa1e997920",
                             Name = "User"
                         });
                 });
@@ -271,6 +297,13 @@ namespace DAL.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("ae8e68b6-162d-41a8-abb6-6f93dc7be00f"),
+                            RoleId = new Guid("6b0073bf-5458-4c4e-8098-5794241214b0")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -294,9 +327,17 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DomainLayer.Models.LostAnimal", b =>
                 {
+                    b.HasOne("DomainLayer.Models.User", "Creator")
+                        .WithMany("LostAnimalRecords")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DomainLayer.Models.District", "District")
                         .WithMany("LostAnimals")
                         .HasForeignKey("DistrictId");
+
+                    b.Navigation("Creator");
 
                     b.Navigation("District");
                 });
@@ -355,6 +396,11 @@ namespace DAL.Migrations
             modelBuilder.Entity("DomainLayer.Models.District", b =>
                 {
                     b.Navigation("LostAnimals");
+                });
+
+            modelBuilder.Entity("DomainLayer.Models.User", b =>
+                {
+                    b.Navigation("LostAnimalRecords");
                 });
 #pragma warning restore 612, 618
         }

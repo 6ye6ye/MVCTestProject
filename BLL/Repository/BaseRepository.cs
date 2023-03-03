@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Linq;
 
 namespace BLL.Repository;
 
@@ -21,9 +20,14 @@ public abstract class BaseRepository<TEntity, TContext> : IRepository<TEntity>
         return entities;
     }
 
-    public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> filterExpression)
+    public virtual IEnumerable<TEntity> GetAll(int count)
     {
-        return entities.Where(filterExpression);
+        return entities.Take(count);
+    }
+
+    public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, object>> sortExpression, ListSortDirection sortDirection, int count)
+    {
+        return ApplyFilterSortAndLimit(entities, null, sortExpression, sortDirection, count);
     }
 
     public virtual IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>>? filterExpression,
@@ -87,7 +91,7 @@ public abstract class BaseRepository<TEntity, TContext> : IRepository<TEntity>
         return entities.FirstOrDefault(expression);
     }
 
-    public async Task<TEntity>? FirstOrDefaultAsync(Expression<Func<TEntity, bool>> expression)
+    public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> expression)
     {
         return await entities.FirstOrDefaultAsync(expression);
     }

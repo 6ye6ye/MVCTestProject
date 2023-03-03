@@ -17,7 +17,6 @@ public class LostAnimalViewModelAdd
 {
     public LostAnimalDtoAdd LostAnimal { get; set; }
 
-    public SelectList? AnimalTypeList { get; set; }
     public SelectList? DistrictList { get; set; }
 
     public LostAnimalViewModelAdd(LostAnimalDtoAdd lostAnimal)

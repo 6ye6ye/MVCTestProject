@@ -7,9 +7,12 @@
 
 <h1>Потерянные животные</h1>
 
-<p>
-    <a asp-action="Create">Добавить объявление</a>
-</p>
+ @if (User.Identity.IsAuthenticated){
+    <p>
+    
+        <a asp-action="Create">Добавить объявление</a>
+    </p>
+ }
 
 <div id="app">
     <div class="row text-left mb-5 align-items-end">
@@ -35,12 +38,12 @@
         </div>
         <div class="col-md-2">
             <label>Сортировка:</label>
-            <select v-model="listFilter.sort" asp-items="@Html.GetEnumSelectList<BaseAdSortParameter>()" class="form-control" data-toggle="select" tabindex="-98">
+            <select ref="sortSelect" v-model="listFilter.sort" asp-items="@Html.GetEnumSelectList<BaseAdSortParameter>()" class="form-control" data-toggle="select" tabindex="-98">
             </select>
         </div>
         <div class="col-md-2">
             <label>Количество на странице:</label>
-            <select v-model="listFilter.itemsCount" asp-items="@Html.GetEnumSelectList<ItemsCountPerPage>()" class="form-control" data-toggle="select" tabindex="-98">
+            <select ref="itemsCountSelect" v-model="listFilter.itemsCount" asp-items="@Html.GetEnumSelectList<ItemsCountPerPage>()" class="form-control" data-toggle="select" tabindex="-98">
             </select>
         </div>
         <div class="col-md-2">
@@ -64,6 +67,10 @@
                     itemsCount: '',
                     sort: '',
                 }
+            },
+            mounted() {
+                this.listFilter.sort = this.$refs.sortSelect.options[0].value;
+                this.listFilter.itemsCount = this.$refs.itemsCountSelect.options[0].value;
             },
             methods: {
                 applyFilter() {
